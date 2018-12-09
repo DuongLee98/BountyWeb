@@ -1,6 +1,20 @@
 const config = require('./config');
 const Web3 = require('web3');
-const web3 = new Web3(new Web3.providers.WebsocketProvider(config.httpProvider));
+var provider = new Web3.providers.WebsocketProvider(config.httpProvider);
+var web3 = new Web3(provider);
+
+provider.on('error', e => console.log('WS Error', e));
+provider.on('end', e => {
+    console.log('WS closed');
+    console.log('Attempting to reconnect...');
+    provider = new Web3.providers.WebsocketProvider(config.httpProvider);
+
+    provider.on('connect', function () {
+        console.log('WSS Reconnected');
+    });
+    
+    web3.setProvider(provider);
+});
 
 var account = new web3.eth.Contract(config.abiAccount, config.addressAccount, {from: config.addressFrom, gasPrice: config.gasPrice});
 
