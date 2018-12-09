@@ -116,5 +116,6 @@ module.exports =
 {
 	contract: account,
 
-	allEventNewAccount: allEventNewAccount
+	allEventNewAccount: allEventNewAccount,
+	regAccount: regAccount
 }

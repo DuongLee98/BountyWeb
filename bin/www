@@ -105,6 +105,7 @@ company.on('connection', function (socket){
   console.log(socket.id);
 
   reg(socket, 'reg', 'rreg');
+  addBounty(socket, 'addBounty', 'raddBounty');
 
   socket.on('disconnect', function()
   {
@@ -221,9 +222,47 @@ async function allEventNewSend(socket, keyin, keyout)
 
 function reg(socket, keyin, keyout)
 {
-  socket.on(keyin, function(data){
-    console.log(data);
-    socket.emit(keyout, {msg: 'ok'});
+  socket.on(keyin,async function(data){
+    try
+    {
+      data = await account.regAccount(data.user, data.pass);
+      var tx = config.infoTransaction(data);
+      if (tx.status == true)
+      {
+        socket.emit(keyout, success(tx, 'success'));
+      }
+      else
+      {
+        socket.emit(keyout, error('may be user exist.'));
+      }
+    }
+    catch(e)
+    {
+      socket.emit(keyout, error('may be user exist.'));
+    }
+  })
+}
+
+function addBounty(socket, keyin, keyout)
+{
+  socket.on(keyin,async function(data){
+    try
+    {
+      data = await bounty.addBounty(data.user, data.symbol, data.value);
+      var tx = config.infoTransaction(data);
+      if (tx.status == true)
+      {
+        socket.emit(keyout, success(tx, 'success'));
+      }
+      else
+      {
+        socket.emit(keyout, error('may be symbol or user doesnt exist.'));
+      }
+    }
+    catch(e)
+    {
+      socket.emit(keyout, error('may be symbol or user doesnt exist.'));
+    }
   })
 }
 

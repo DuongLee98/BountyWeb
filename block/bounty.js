@@ -185,5 +185,6 @@ module.exports =
 	contract: bounty,
 
 	allEventNewAddBounty: allEventNewAdd,
-	allEventNewSend: allEventNewSend
+	allEventNewSend: allEventNewSend,
+	addBounty: addBounty
 }
