@@ -1,0 +1,238 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('bountyweb:server');
+var http = require('http');
+var config = require('../block/config');
+var account = require('../block/account');
+var bounty = require('../block/bounty');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3015');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Create Socket server.
+ */
+
+io = require('socket.io')(server);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+var company = io.of('/company');
+var webuser = io.of('/web');
+
+company.on('connection', function (socket){
+  console.log(socket.id);
+
+  reg(socket, 'reg', 'rreg');
+
+  socket.on('disconnect', function()
+  {
+    console.log('disconnect'+socket.id);
+  })
+})
+
+webuser.on('connection', function(socket){
+  console.log(socket.id);
+
+  allEventNewAccount(socket, '', 'rallEventNewAccount');
+  allEventNewAddBounty(socket, '', 'rallEventNewAddBounty');
+  allEventNewSend(socket, '', 'rallEventNewSend');
+
+  socket.on('disconnect', function()
+  {
+    console.log('disconnect'+socket.id);
+  })
+})
+NewAccount(webuser);
+NewAdd(webuser);
+NewSend(webuser);
+
+
+
+//---------------------------------------------
+
+function NewAccount(io)
+{
+  account.contract.events.NewAccount({
+    fromBlock: 0
+  })
+  .on('data', event => {
+    io.emit('NewAccount', success(config.getInfoEvent(event), 'success'));
+  })
+  .on('changed', event => {
+    console.log('event removed from blockchain:', event)
+  })
+  .on('error', error => {
+    console.error(error)
+  })
+}
+
+function NewAdd(io)
+{
+  bounty.contract.events.NewAdd({
+    fromBlock: 0
+  })
+  .on('data', event => {
+    io.emit('NewAdd', success(config.getInfoEvent(event), 'success'));
+  })
+  .on('changed', event => {
+    console.log('event removed from blockchain:', event)
+  })
+  .on('error', error => {
+    console.error(error)
+  })
+}
+
+function NewSend(io)
+{
+  bounty.contract.events.NewSend({
+    fromBlock: 0
+  })
+  .on('data', event => {
+    io.emit('NewSend', success(config.getInfoEvent(event), 'success'));
+  })
+  .on('changed', event => {
+    console.log('event removed from blockchain:', event)
+  })
+  .on('error', error => {
+    console.error(error)
+  })
+}
+
+async function allEventNewAccount(socket, keyin, keyout)
+{
+  try
+  {
+    data = await account.allEventNewAccount();
+    socket.emit(keyout, success(data, 'success'));
+  }
+  catch(e)
+  {
+    socket.emit(keyout, error(e));
+  }
+}
+
+async function allEventNewAddBounty(socket, keyin, keyout)
+{
+  try
+  {
+    data = await bounty.allEventNewAddBounty();
+    socket.emit(keyout, success(data, 'success'));
+  }
+  catch(e)
+  {
+    socket.emit(keyout, error(e));
+  }
+}
+
+async function allEventNewSend(socket, keyin, keyout)
+{
+  try
+  {
+    data = await bounty.allEventNewSend();
+    socket.emit(keyout, success(data, 'success'));
+  }
+  catch(e)
+  {
+    socket.emit(keyout, error(e));
+  }
+}
+
+function reg(socket, keyin, keyout)
+{
+  socket.on(keyin, function(data){
+    console.log(data);
+    socket.emit(keyout, {msg: 'ok'});
+  })
+}
+
+function success(data, msg)
+{
+  return {cd: 0, msg: msg, data: data};
+}
+
+function error(msg)
+{
+  return {cd: 1, msg: msg, data: {}};
+}

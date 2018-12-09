@@ -1,0 +1,13 @@
+body {
+  padding: 5px;
+  font: 12px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.anyClass {
+  height:250px;
+  overflow-y: scroll;
+}
