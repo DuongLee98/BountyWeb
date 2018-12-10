@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= user %></title>
+<link rel='stylesheet' href='/stylesheets/bootstrap.css' />
+<link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+<body>
+	<div id="check_mark" class="check_mark" style="display: none;">
+	  <div class="sa-icon sa-success animate">
+	    <span class="sa-line sa-tip animateSuccessTip"></span>
+	    <span class="sa-line sa-long animateSuccessLong"></span>
+	    <div class="sa-placeholder"></div>
+	    <div class="sa-fix"></div>
+	  </div>
+	</div>
+	<div id="load"><div id="iloader"><div id="iloadertext"></div></div><div id="loader"></div></div>
+	<div class="main" id="myDiv">
+	<div id="mySidepanel" class="sidepanel">
+	  	<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+	  	<a href="/" class="list-group-item list-group-item-action list-group-item-light">
+            All Transaction
+        </a>
+        <a href="/users/u/<%= user %>" class="list-group-item list-group-item-action list-group-item-light">
+            Profile
+        </a>
+          <a href="/users/transaction" class="list-group-item list-group-item-action active list-group-item-light">Transaction</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-light">Transaction History</a>
+	</div>
+	<nav class="navbar fixed-top navbar-dark bg-dark">
+	    <button class="navbar-toggler" onclick="openNav()" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+	      <span class="navbar-toggler-icon"></span>
+	    </button>
+  	</nav>
+
+	  <div class="rounded p-2 mt-5" id="info">
+	  	<canvas class="rounded border border-primary d-block mx-auto" id="canvas" height="200" width="200" style="height: 116px; width: 116px;"></canvas>
+		<hr>
+		<center><%= user %></center>
+		<hr>
+	  </div>
+	  <div class="card bg-light mb-3">
+      <div class="card-header">Send Bounty</div>
+      <div class="card-body">
+        <div class="table-responsive-sm">
+          	<form>
+				  <div class="form-group">
+				    <label for="userA">From</label>
+				    <input class="form-control" id="userA" type="text" value="<%= user %>" readonly>
+				  </div>
+				  <div class="form-group">
+				    <label for="symbolA">Symbol select</label>
+				    <select class="form-control" id="symbolA">
+				      
+				    </select>
+				  </div>
+				  <div class="form-group">
+				    <label for="val" id="infovalue">Value</label>
+				    <input type="text" class="form-control" id="val" placeholder="">
+				  </div>
+				  <div class="form-group">
+				    <label for="userB">To</label>
+				    <input type="text" class="form-control" id="userB" placeholder="">
+				  </div>
+				  <div class="form-group">
+				    <label for="symbolB">Symbol select</label>
+				    <select class="form-control" id="symbolB">
+				      
+				    </select>
+				  </div>
+				  <button type="button" onclick="send(false)" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLong">Send</button>
+			</form>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="bodycontent">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="send(true)" data-toggle="modal" data-target="#exampleModalLong2">Confirm</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalLong2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle2">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="bodycontent2">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+<!--             <button type="button" class="btn btn-primary" onclick="send(true)">Confirm</button> -->
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script src="/javascripts/qrcode.js"></script>
+<script src = "/socket.io/socket.io.js"></script>
+<script src = "/javascripts/bootstrap-notify.js"></script>
+<script src = "/javascripts/load.js"></script>
+<script>
+	var QRCode = require('qrcode')
+	var canvas = document.getElementById('canvas')
+  	QRCode.toCanvas(document.getElementById('canvas'), '<%= user %>', function (error) {
+	    if (error) console.error(error)
+  	})
+  	function openNav() {
+	  document.getElementById("mySidepanel").style.width = "250px";
+	}
+
+	/* Set the width of the sidebar to 0 (hide it) */
+	function closeNav() {
+	  document.getElementById("mySidepanel").style.width = "0";
+	}
+
+	var socket = io('/user');
+	let user = '<%= user %>'
+	let pass = '<%= pass %>'
+	socket.emit('login', {user: user, pass: pass});
+	socket.on('rlogin', function (info){
+		if (info.cd == 0)
+		{
+			socket.emit('getInfoUser', {user: user});
+			socket.emit('getAllBountySymbol', {});
+		}
+		else
+		{
+			alert(info.msg);
+		}
+	});
+	let alldata = [];
+	socket.on('rgetInfoUser', function(info){
+		if (info.cd == 0)
+		{
+			console.log(info);
+			
+			alldata = info.data;
+			rendOptionA(info.data);
+			Success();
+			setTimeout(showPage, 2000);
+		}
+		else
+		{
+			alert(info.msg);
+		}
+	})
+	socket.on('rgetAllBountySymbol', function(info){
+		if (info.cd == 0)
+		{
+			console.log(info);
+			rendOptionB(info.data);
+		}
+		else
+		{
+			alert(info.msg);
+		}
+	})
+	socket.on('rsendBounty', function(info){
+		if (info.cd == 0)
+		{
+			console.log(info);
+			Success();
+			setTimeout(showPage, 2000);
+			socket.emit('login', {user: user, pass: pass});
+			viewTrans(info.data);
+		}
+		else
+		{
+			alert(info.msg);
+			showPage();
+		}
+	})
+
+	socket.on('NewAdd', function (data) {
+		$.notify('<b>'+'You'+'</b>'+' got '+'<b>'+data.data.returnValues.val+ ' ' + data.data.returnValues.symbol+'</b>', {
+			placement: {
+			  from: 'top',
+			  align: 'left'
+			},
+		});
+  	})
+
+  	socket.on('NewSend', function (data) {
+		$.notify('<b>'+data.data.returnValues.userA+'</b>'+' send '+'<b>'+data.data.returnValues.val+' '+data.data.returnValues.symbolA+':'+data.data.returnValues.symbolB+'</b>'+' to '+'<b>'+'You'+'</b>', {
+			placement: {
+			  from: 'top',
+			  align: 'left'
+			},
+		});
+      })
+
+	function rendOptionA(data)
+	{
+		document.getElementById('symbolA').innerHTML = '';
+		for (var i=0; i<data.length; i++)
+		{
+		  if (i==0)
+		  {
+		  	document.getElementById('symbolA').innerHTML += '<option onclick="sl('+i+')" selected>'+data[i].symbol+'</option>';
+		  	sl(i);
+		  }
+		  else
+		  	document.getElementById('symbolA').innerHTML += '<option onclick="sl('+i+')">'+data[i].symbol+'</option>';
+		}
+	}
+
+	function rendOptionB(data)
+	{
+		document.getElementById('symbolB').innerHTML = '';
+		for (var i=0; i<data.length; i++)
+		{
+		 	document.getElementById('symbolB').innerHTML += '<option>'+data[i]+'</option>';
+		}
+	}
+
+	function sl(i)
+	{
+		document.getElementById('infovalue').innerHTML = 'Value max: '+alldata[i].bounty;
+	}
+
+	function send(confirm)
+	{
+		var userA = document.getElementById('userA').value;
+		var passA = '<%= pass %>';
+		var symbolA = document.getElementById('symbolA').value;
+		var val = document.getElementById('val').value;
+		var userB = document.getElementById('userB').value;
+		var symbolB = document.getElementById('symbolB').value;
+		console.log(userA + ' '+ passA+' '+symbolA+' '+val+' '+userB+' '+symbolB);
+		if (confirm == false)
+		{
+			document.getElementById('exampleModalLongTitle').innerHTML = 'Confirm transaction';
+        	document.getElementById('bodycontent').innerHTML = '<div class="table-responsive"><table class="table table-bordered"><thead></thead><tbody id="newtrans"><tr><td style="text-align: right;">From</td><td>'+userA+'</td></tr><tr><td style="text-align: right;">Symbol</td><td>'+symbolA+'</td></tr><tr><td style="text-align: right;">To</td><td>'+userB+'</td></tr><tr><td style="text-align: right;">Symbol</td><td>'+symbolB+'</td></tr><tr><td style="text-align: right;">value</td><td>'+val+'</td></tr></tbody></table></div>';
+		}
+		else
+		{
+			loadPage();
+			socket.emit('sendBounty', {userA: userA, passA: passA, symbolA: symbolA, val: val, userB: userB, symbolB:symbolB});
+		}
+	}
+
+	function viewTrans(tx)
+	{
+		document.getElementById('exampleModalLongTitle2').innerHTML = "Success";
+		document.getElementById('bodycontent2').innerHTML = '<div class="table-responsive"><table class="table table-bordered"><thead></thead><tbody id="newaccount"><tr><td style="text-align: right;">blockNumber</td><td><a target="blank" href="https://kovan.etherscan.io/block/'+tx.blockNumber+'">'+tx.blockNumber+'</a></td></tr><tr><td style="text-align: right;">transactionHash</td><td><a target="blank" href="https://kovan.etherscan.io/tx/'+tx.transactionHash+'">'+tx.transactionHash+'</a></td></tr><tr><td style="text-align: right;">transactionIndex</td><td>'+tx.transactionIndex+'</td></tr><tr><td style="text-align: right;">Status</td><td>'+tx.status+'</td></tr></tbody></table></div>';
+	}
+
+</script>
+
+</html>

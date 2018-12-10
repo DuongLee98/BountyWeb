@@ -1,6 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <div id="mySidepanel" class="sidepanel">
+      <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <a href="/" class="list-group-item list-group-item-action active list-group-item-light">
+            All Transaction
+        </a>
+        <a href="/users/u/<%= user %>" class="list-group-item list-group-item-action list-group-item-light">
+            Profile
+        </a>
+          <a href="/users/transaction" class="list-group-item list-group-item-action list-group-item-light">Transaction</a>
+          <a href="#" class="list-group-item list-group-item-action list-group-item-light">Transaction History</a>
+      </div>
+      <nav class="navbar fixed-top navbar-dark bg-dark">
+      <button class="navbar-toggler" onclick="openNav()" type="button" data-toggle="collapse" data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </nav>
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
@@ -9,7 +25,7 @@
     <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.5.0/css/all.css' integrity='sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU' crossorigin='anonymous'>
   </head>
   <body>
-    <div class="card bg-light mb-3">
+    <div class="card bg-light mb-3 mt-5">
       <div class="card-header">New register</div>
       <div class="card-body">
         <div class="table-responsive-sm anyClass">
@@ -97,6 +113,14 @@
     <script src = "/socket.io/socket.io.js"></script>
     <script src = "/javascripts/bootstrap-notify.js"></script>
     <script>
+      function openNav() {
+        document.getElementById("mySidepanel").style.width = "250px";
+      }
+
+      /* Set the width of the sidebar to 0 (hide it) */
+      function closeNav() {
+        document.getElementById("mySidepanel").style.width = "0";
+      }
       let allaccount = [];
       let alladd = [];
       let allsend = [];

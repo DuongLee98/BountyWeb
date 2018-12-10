@@ -100,6 +100,11 @@ function onListening() {
 
 var company = io.of('/company');
 var webuser = io.of('/web');
+var user = io.of('/user');
+
+let dataUser = {};
+let dataId = {};
+let dataLg = {};
 
 company.on('connection', function (socket){
   console.log(socket.id);
@@ -126,10 +131,131 @@ webuser.on('connection', function(socket){
   })
 })
 NewAccount(webuser);
-NewAdd(webuser);
-NewSend(webuser);
 
+user.on('connection', function(socket){
+  console.log(socket.id);
 
+  dataId[socket.id] = socket.id;
+  dataUser[socket.id] = socket.id;
+  dataLg[socket.id] = false;
+
+  login(socket, 'login', 'rlogin');
+  getInfoUser(socket, 'getInfoUser', 'rgetInfoUser');
+  getAllBountySymbol(socket, 'getAllBountySymbol', 'rgetAllBountySymbol');
+  sendBounty(socket, 'sendBounty', 'rsendBounty');
+
+  socket.on('disconnect', function()
+  {
+    console.log('disconnect'+socket.id);
+    delete dataId[dataUser[socket.id]];
+    delete dataUser[socket.id];
+    delete dataLg[socket.id];
+  })
+})
+
+NewAdd(webuser, user);
+NewSend(webuser, user);
+
+function login(socket, keyin, keyout)
+{
+  socket.on(keyin,async function(data){
+    try
+    {
+      var lg = await account.login(data.user, data.pass);
+      
+      if (lg == true)
+      {
+        socket.emit(keyout, success({}, 'success'));
+        dataUser[socket.id] = data.user;
+        dataId[data.user] = socket.id;
+        delete dataId[socket.id];
+        dataLg[socket.id] = true;
+      }
+      else
+      {
+        socket.emit(keyout, error('may be user doesnt exist.'));
+      }
+    }
+    catch(e)
+    {
+      socket.emit(keyout, error('may be user doesnt exist.'));
+    }
+  })
+}
+
+function getInfoUser(socket, keyin, keyout)
+{
+  socket.on(keyin,async function(data){
+    if (dataLg[socket.id])
+    {
+      try
+      {
+        var data = await bounty.getInfoUser(data.user);
+        socket.emit(keyout, success(data, 'success'));
+      }
+      catch(e)
+      {
+        socket.emit(keyout, error('may be user doesnt exist.'));
+      }
+    }
+    else
+    {
+      socket.emit(keyout, error('must login'));
+    }
+  })
+}
+
+function getAllBountySymbol(socket, keyin, keyout)
+{
+  socket.on(keyin,async function(data){
+    if (dataLg[socket.id])
+    {
+      try
+      {
+        var data = await bounty.getAllBountySymbol();
+        socket.emit(keyout, success(data, 'success'));
+      }
+      catch(e)
+      {
+        socket.emit(keyout, error('error'));
+      }
+    }
+    else
+    {
+      socket.emit(keyout, error('must login'));
+    }
+  })
+}
+
+function sendBounty(socket, keyin, keyout)
+{
+  socket.on(keyin,async function(data){
+    if (dataLg[socket.id])
+    {
+      try
+      {
+        data = await bounty.sendBounty(data.userA, data.passA, data.symbolA, data.val, data.userB, data.symbolB);
+        var tx = config.infoTransaction(data);
+        if (tx.status == true)
+        {
+          socket.emit(keyout, success(tx, 'success'));
+        }
+        else
+        {
+          socket.emit(keyout, error('wrong with input'));
+        }
+      }
+      catch(e)
+      {
+        socket.emit(keyout, error('wrong with input'));
+      }
+    }
+    else
+    {
+      socket.emit(keyout, error('must login'));
+    }
+  })
+}
 
 //---------------------------------------------
 
@@ -149,13 +275,18 @@ function NewAccount(io)
   })
 }
 
-function NewAdd(io)
+function NewAdd(io, ioUser)
 {
   bounty.contract.events.NewAdd({
     fromBlock: 0
   })
   .on('data', event => {
-    io.emit('NewAdd', success(config.getInfoEvent(event), 'success'));
+    var info = config.getInfoEvent(event);
+    if (dataId[info.returnValues.user]!=undefined && dataLg[dataId[info.returnValues.user]] == true)
+    {
+      ioUser.to(dataId[info.returnValues.user]).emit('NewAdd', success(info, 'success'));
+    }
+    io.emit('NewAdd', success(info, 'success'));
   })
   .on('changed', event => {
     console.log('event removed from blockchain:', event)
@@ -165,13 +296,18 @@ function NewAdd(io)
   })
 }
 
-function NewSend(io)
+function NewSend(io, ioUser)
 {
   bounty.contract.events.NewSend({
     fromBlock: 0
   })
   .on('data', event => {
-    io.emit('NewSend', success(config.getInfoEvent(event), 'success'));
+    var info = config.getInfoEvent(event);
+    if (dataId[info.returnValues.userB]!=undefined && dataLg[dataId[info.returnValues.userB]] == true)
+    {
+      ioUser.to(dataId[info.returnValues.userB]).emit('NewSend', success(info, 'success'));
+    }
+    io.emit('NewSend', success(info, 'success'));
   })
   .on('changed', event => {
     console.log('event removed from blockchain:', event)

@@ -13,6 +13,7 @@ provider.on('end', e => {
         console.log('WSS Reconnected');
     });
     
+    // web3 = new Web3(provider);
     web3.setProvider(provider);
 });
 
@@ -185,6 +186,52 @@ function allEventNewSend()
 	})
 }
 
+async function getAllBountySymbol()
+{
+	let arr = [];
+	var i = 0;
+	while(true)
+	{
+		try
+		{
+			var symbol = await getSymbol(i);
+			arr.push(symbol);
+			i++;
+		}
+		catch(e)
+		{
+			break;
+		}
+	}
+	return arr;
+}
+
+async function getInfoUser(user)
+{
+	try
+	{
+		let rs = [];
+		let arr = await getAllBountySymbol();
+		for (var i=0; i<arr.length; i++)
+		{
+			info = {};
+			info.symbol = arr[i];
+			info.bounty = await getBounty(user, arr[i]);
+			info.allbounty = await getAllBounty(user, arr[i]);
+			if (info.bounty != 0 || info.allbounty!=0)
+				rs.push(info);
+		}
+		return rs;
+	}
+	catch(e)
+	{
+		throw new Error(e);
+	}
+}
+
+// getAllBountySymbol().then(console.log);
+// getInfoUser('Duongga123').then(console.log);
+
 
 // addBountySymbol("DLC").then(console.log);
 // addBounty("admin", "DLC", 50)
@@ -200,5 +247,8 @@ module.exports =
 
 	allEventNewAddBounty: allEventNewAdd,
 	allEventNewSend: allEventNewSend,
-	addBounty: addBounty
+	addBounty: addBounty,
+	getInfoUser: getInfoUser,
+	getAllBountySymbol: getAllBountySymbol,
+	sendBounty: sendBounty
 }

@@ -12,7 +12,7 @@ provider.on('end', e => {
     provider.on('connect', function () {
         console.log('WSS Reconnected');
     });
-    
+    // web3 = new Web3(provider);
     web3.setProvider(provider);
 });
 
@@ -131,5 +131,6 @@ module.exports =
 	contract: account,
 
 	allEventNewAccount: allEventNewAccount,
-	regAccount: regAccount
+	regAccount: regAccount,
+	login: login
 }
