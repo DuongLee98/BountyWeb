@@ -1,20 +1,64 @@
 const config = require('./config');
 const Web3 = require('web3');
-var provider = new Web3.providers.WebsocketProvider(config.httpProvider);
-var web3 = new Web3(provider);
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
 
-provider.on('error', e => console.log('WS Error', e));
-provider.on('end', e => {
-    console.log('WS closed');
-    console.log('Attempting to reconnect...');
-    provider = new Web3.providers.WebsocketProvider(config.httpProvider);
+// var provider = new Web3.providers.WebsocketProvider(config.httpProvider);
+// var web3 = new Web3(provider);
 
-    provider.on('connect', function () {
-        console.log('WSS Reconnected');
-    });
-    // web3 = new Web3(provider);
-    web3.setProvider(provider);
-});
+const getProvider = () => {
+	const provider = new Web3.providers.WebsocketProvider(config.httpProvider)
+	provider.on('connect', () => console.log('WS Connected'))
+	provider.on('error', e => {
+	  console.error('WS Error', e)
+	  web3.setProvider(getProvider())
+	})
+	provider.on('end', e => {
+	  console.error('WS End', e)
+	  web3.setProvider(getProvider())
+	  eventEmitter.emit('reload');
+	})
+
+	return provider
+}
+const web3 = new Web3(getProvider())
+
+function reconnect()
+{
+	console.log('reconnect');
+	getProvider();
+}
+eventEmitter.on('reconnect', reconnect);
+
+function Reconnect()
+{
+	return new Promise(function (resolve, reject){
+		try
+		{
+			eventEmitter.emit('reconnect');
+			return resolve(true);
+		}
+		catch(e)
+		{
+			return reject(e);
+		}
+	})
+}
+
+// provider.on('error', e => console.log('WS Error', e));
+// provider.on('end', e => {
+//     console.log('WS closed');
+//     console.log('Attempting to reconnect...');
+//     provider = new Web3.providers.WebsocketProvider(config.httpProvider);
+
+//     provider.on('connect', function () {
+//         console.log('WSS Reconnected');
+//     });
+    
+//     // web3 = new Web3(provider);
+//     web3.setProvider(provider);
+//     eventEmitter.emit('reload');
+// });
 
 var account = new web3.eth.Contract(config.abiAccount, config.addressAccount, {from: config.addressFrom, gasPrice: config.gasPrice});
 
@@ -132,5 +176,6 @@ module.exports =
 
 	allEventNewAccount: allEventNewAccount,
 	regAccount: regAccount,
-	login: login
+	login: login,
+	Reconnect: Reconnect
 }

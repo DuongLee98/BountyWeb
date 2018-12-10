@@ -10,6 +10,8 @@ var http = require('http');
 var config = require('../block/config');
 var account = require('../block/account');
 var bounty = require('../block/bounty');
+var events = require('events');
+var eventEmitter = new events.EventEmitter();
 
 /**
  * Get port from environment and store in Express.
@@ -108,7 +110,20 @@ let dataLg = {};
 
 company.on('connection', function (socket){
   console.log(socket.id);
-
+  console.log(socket.id);
+  bounty.Reconnect().then(function(info){
+    if (info == true)
+    {
+      // eventEmitter.emit('reload');
+    }
+  })
+  account.Reconnect().then(function(info){
+    if (info == true)
+    {
+      // eventEmitter.emit('reload');
+    }
+  })
+  
   reg(socket, 'reg', 'rreg');
   addBounty(socket, 'addBounty', 'raddBounty');
 
@@ -120,6 +135,19 @@ company.on('connection', function (socket){
 
 webuser.on('connection', function(socket){
   console.log(socket.id);
+
+  bounty.Reconnect().then(function(info){
+    if (info == true)
+    {
+      // eventEmitter.emit('reload');
+    }
+  })
+  account.Reconnect().then(function(info){
+    if (info == true)
+    {
+      // eventEmitter.emit('reload');
+    }
+  })
 
   allEventNewAccount(socket, '', 'rallEventNewAccount');
   allEventNewAddBounty(socket, '', 'rallEventNewAddBounty');
@@ -134,6 +162,18 @@ NewAccount(webuser);
 
 user.on('connection', function(socket){
   console.log(socket.id);
+  bounty.Reconnect().then(function(info){
+    if (info == true)
+    {
+      // eventEmitter.emit('reload');
+    }
+  })
+  account.Reconnect().then(function(info){
+    if (info == true)
+    {
+      // eventEmitter.emit('reload');
+    }
+  })
 
   dataId[socket.id] = socket.id;
   dataUser[socket.id] = socket.id;
@@ -155,6 +195,14 @@ user.on('connection', function(socket){
 
 NewAdd(webuser, user);
 NewSend(webuser, user);
+
+var myEventHandler = function () {
+  console.log('reload');
+  NewAccount(webuser);
+  NewAdd(webuser, user);
+  NewSend(webuser, user);
+}
+eventEmitter.on('reload', myEventHandler);
 
 function login(socket, keyin, keyout)
 {

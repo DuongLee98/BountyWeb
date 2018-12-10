@@ -1,6 +1,6 @@
-const keyAPI = "79KTIDWR8NE2G8CP6I5JBGVAUCFYNWU3RH";
+const projID = "4c069654482c400e8bb5b88e56ab40fd";
 
-const httpProvider = "wss://kovan.infura.io/ws/";
+const httpProvider = "wss://kovan.infura.io/ws/v3/"+projID;
 
 const addressAccount = '0x42310b551AEDcC7c110548E11d269FF2735cc3A5';
 const addressBounty = '0x77133D8f21CDB057fC3dC4213ad2042740AF63D9';
@@ -393,7 +393,7 @@ const abiBounty = [
 
 module.exports =
 {
-	keyAPI : keyAPI,
+	projID : projID,
 	httpProvider: httpProvider,
 
 	privateKey: privateKey,

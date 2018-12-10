@@ -51,7 +51,7 @@
 				  </div>
 				  <div class="form-group">
 				    <label for="symbolA">Symbol select</label>
-				    <select class="form-control" id="symbolA">
+				    <select class="form-control" onchange="change()" id="symbolA">
 				      
 				    </select>
 				  </div>
@@ -221,11 +221,11 @@
 		{
 		  if (i==0)
 		  {
-		  	document.getElementById('symbolA').innerHTML += '<option onclick="sl('+i+')" selected>'+data[i].symbol+'</option>';
+		  	document.getElementById('symbolA').innerHTML += '<option  selected>'+data[i].symbol+'</option>';
 		  	sl(i);
 		  }
 		  else
-		  	document.getElementById('symbolA').innerHTML += '<option onclick="sl('+i+')">'+data[i].symbol+'</option>';
+		  	document.getElementById('symbolA').innerHTML += '<option >'+data[i].symbol+'</option>';
 		}
 	}
 
@@ -235,6 +235,21 @@
 		for (var i=0; i<data.length; i++)
 		{
 		 	document.getElementById('symbolB').innerHTML += '<option>'+data[i]+'</option>';
+		}
+	}
+
+	function change()
+	{
+		var sym = document.getElementById('symbolA').value;
+		// console.log(sym);
+		for (var i=0; i<alldata.length; i++)
+		{
+			// console.log(alldata[i].symbol);
+			if (sym == alldata[i].symbol)
+			{
+				sl(i);
+				break;
+			}
 		}
 	}
 
