@@ -185,7 +185,8 @@ function allEventNewAccount()
 module.exports = 
 {
 	contract: account,
-
+	existAccount: existAccount,
+	
 	allEventNewAccount: allEventNewAccount,
 	regAccount: regAccount,
 	login: login,

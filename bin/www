@@ -134,6 +134,7 @@ company.on('connection', function (socket){
   
   reg(socket, 'reg', 'rreg');
   addBounty(socket, 'addBounty', 'raddBounty');
+  existAccount(socket, 'existAccount', 'rexistAccount');
 
   socket.on('disconnect', function()
   {
@@ -454,6 +455,14 @@ function reg(socket, keyin, keyout)
     {
       socket.emit(keyout, error('may be user exist.'));
     }
+  })
+}
+
+function existAccount(socket, keyin, keyout)
+{
+  socket.on(keyin,async function(data){
+    data = await account.existAccount(data.user, data.pass);
+    socket.emit(keyout, success({exist: data}, 'success'));
   })
 }
 
