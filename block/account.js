@@ -11,13 +11,15 @@ const getProvider = () => {
 	provider.on('connect', () => console.log('WS Connected'))
 	provider.on('error', e => {
 	  console.error('WS Error', e)
-	  web3.setProvider(getProvider())
 	  dis = true;
+	  web3.setProvider(getProvider())
+	  
 	})
 	provider.on('end', e => {
 	  console.error('WS End', e)
-	  web3.setProvider(getProvider())
 	  dis = true;
+	  web3.setProvider(getProvider())
+	  
 	})
 
 	return provider
@@ -29,6 +31,16 @@ function reconnect()
 	console.log('reconnect');
 	getProvider();
 	return true;
+}
+
+function getDis()
+{
+	return dis;
+}
+
+function setDis(d)
+{
+	dis = d;
 }
 
 function Reconnect()
@@ -178,5 +190,6 @@ module.exports =
 	regAccount: regAccount,
 	login: login,
 	Reconnect: Reconnect,
-	dis: dis
+	getDis: getDis,
+	setDis: setDis
 }

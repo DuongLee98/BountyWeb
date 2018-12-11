@@ -31,4 +31,24 @@ router.get('/transaction',async function(req, res, next) {
 	res.render('transaction', data);
 });
 
+router.get('/transactionhistory/',async function(req, res, next) {
+	var data = res.locals;
+	if (res.locals.login != true)
+	{
+		return res.redirect('/login');
+	}
+	data.ouser = data.user;
+	res.render('transactionhistory', data);
+});
+
+router.get('/transactionhistory/:user',async function(req, res, next) {
+	var data = res.locals;
+	if (res.locals.login != true)
+	{
+		return res.redirect('/login');
+	}
+	data.ouser = req.params.user;
+	res.render('transactionhistory', data);
+});
+
 module.exports = router;

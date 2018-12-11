@@ -114,20 +114,20 @@ company.on('connection', function (socket){
   bounty.Reconnect().then(function(info){
     if (info == true)
     {
-      if (bounty.dis)
+      if (bounty.getDis())
       {
         reloadBounty();
-        bounty.dis = false;
+        bounty.setDis(false);
       }
     }
   })
   account.Reconnect().then(function(info){
     if (info == true)
     {
-      if (account.dis)
+      if (account.getDis())
       {
         reloadAccount();
-        account.dis = false;
+        account.setDis(false);
       }
     }
   })
@@ -147,20 +147,20 @@ webuser.on('connection', function(socket){
   bounty.Reconnect().then(function(info){
     if (info == true)
     {
-      if (bounty.dis)
+      if (bounty.getDis())
       {
         reloadBounty();
-        bounty.dis = false;
+        bounty.setDis(false);
       }
     }
   })
   account.Reconnect().then(function(info){
     if (info == true)
     {
-      if (account.dis)
+      if (account.getDis())
       {
         reloadAccount();
-        account.dis = false;
+        account.setDis(false);
       }
     }
   })
@@ -178,24 +178,24 @@ NewAccount(webuser);
 
 user.on('connection', function(socket){
   console.log(socket.id);
-  
+
   bounty.Reconnect().then(function(info){
     if (info == true)
     {
-      if (bounty.dis)
+      if (bounty.getDis())
       {
         reloadBounty();
-        bounty.dis = false;
+        bounty.setDis(false);
       }
     }
   })
   account.Reconnect().then(function(info){
     if (info == true)
     {
-      if (account.dis)
+      if (account.getDis())
       {
         reloadAccount();
-        account.dis = false;
+        account.setDis(false);
       }
     }
   })
@@ -208,6 +208,9 @@ user.on('connection', function(socket){
   getInfoUser(socket, 'getInfoUser', 'rgetInfoUser');
   getAllBountySymbol(socket, 'getAllBountySymbol', 'rgetAllBountySymbol');
   sendBounty(socket, 'sendBounty', 'rsendBounty');
+
+  allEventNewAddBounty(socket, 'history', 'rhallEventNewAddBounty');
+  allEventNewSend(socket, 'history', 'rhallEventNewSend');
 
   socket.on('disconnect', function()
   {
