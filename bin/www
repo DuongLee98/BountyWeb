@@ -110,17 +110,25 @@ let dataLg = {};
 
 company.on('connection', function (socket){
   console.log(socket.id);
-  console.log(socket.id);
+
   bounty.Reconnect().then(function(info){
     if (info == true)
     {
-      // eventEmitter.emit('reload');
+      if (bounty.dis)
+      {
+        reloadBounty();
+        bounty.dis = false;
+      }
     }
   })
   account.Reconnect().then(function(info){
     if (info == true)
     {
-      // eventEmitter.emit('reload');
+      if (account.dis)
+      {
+        reloadAccount();
+        account.dis = false;
+      }
     }
   })
   
@@ -139,13 +147,21 @@ webuser.on('connection', function(socket){
   bounty.Reconnect().then(function(info){
     if (info == true)
     {
-      // eventEmitter.emit('reload');
+      if (bounty.dis)
+      {
+        reloadBounty();
+        bounty.dis = false;
+      }
     }
   })
   account.Reconnect().then(function(info){
     if (info == true)
     {
-      // eventEmitter.emit('reload');
+      if (account.dis)
+      {
+        reloadAccount();
+        account.dis = false;
+      }
     }
   })
 
@@ -162,16 +178,25 @@ NewAccount(webuser);
 
 user.on('connection', function(socket){
   console.log(socket.id);
+  
   bounty.Reconnect().then(function(info){
     if (info == true)
     {
-      // eventEmitter.emit('reload');
+      if (bounty.dis)
+      {
+        reloadBounty();
+        bounty.dis = false;
+      }
     }
   })
   account.Reconnect().then(function(info){
     if (info == true)
     {
-      // eventEmitter.emit('reload');
+      if (account.dis)
+      {
+        reloadAccount();
+        account.dis = false;
+      }
     }
   })
 
@@ -196,13 +221,15 @@ user.on('connection', function(socket){
 NewAdd(webuser, user);
 NewSend(webuser, user);
 
-var myEventHandler = function () {
-  console.log('reload');
-  NewAccount(webuser);
+function reloadBounty () {
+  console.log('reloadBounty');
   NewAdd(webuser, user);
   NewSend(webuser, user);
 }
-eventEmitter.on('reload', myEventHandler);
+function reloadAccount () {
+  console.log('reloadAccount');
+  NewAccount(webuser);
+}
 
 function login(socket, keyin, keyout)
 {

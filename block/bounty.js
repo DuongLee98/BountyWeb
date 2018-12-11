@@ -5,18 +5,19 @@ var eventEmitter = new events.EventEmitter();
 
 // var provider = new Web3.providers.WebsocketProvider(config.httpProvider);
 // var web3 = new Web3(provider);
-
+let dis = false;
 const getProvider = () => {
 	const provider = new Web3.providers.WebsocketProvider(config.httpProvider)
 	provider.on('connect', () => console.log('WS Connected'))
 	provider.on('error', e => {
 	  console.error('WS Error', e)
 	  web3.setProvider(getProvider())
+	  dis = true;
 	})
 	provider.on('end', e => {
 	  console.error('WS End', e)
 	  web3.setProvider(getProvider())
-	  eventEmitter.emit('reload');
+	  dis = true;
 	})
 
 	return provider
@@ -27,16 +28,15 @@ function reconnect()
 {
 	console.log('reconnect');
 	getProvider();
+	return true;
 }
-eventEmitter.on('reconnect', reconnect);
 
 function Reconnect()
 {
 	return new Promise(function (resolve, reject){
 		try
 		{
-			eventEmitter.emit('reconnect');
-			return resolve(true);
+			return resolve(reconnect());
 		}
 		catch(e)
 		{
@@ -294,5 +294,6 @@ module.exports =
 	getInfoUser: getInfoUser,
 	getAllBountySymbol: getAllBountySymbol,
 	sendBounty: sendBounty,
-	Reconnect: Reconnect
+	Reconnect: Reconnect,
+	dis: dis
 }
