@@ -119,6 +119,7 @@ company.on('connection', function (socket){
         reloadBounty();
         bounty.setDis(false);
       }
+      addBounty(socket, 'addBounty', 'raddBounty');
     }
   })
   account.Reconnect().then(function(info){
@@ -129,12 +130,14 @@ company.on('connection', function (socket){
         reloadAccount();
         account.setDis(false);
       }
+      reg(socket, 'reg', 'rreg');
+      existAccount(socket, 'existAccount', 'rexistAccount');
     }
   })
   
-  reg(socket, 'reg', 'rreg');
-  addBounty(socket, 'addBounty', 'raddBounty');
-  existAccount(socket, 'existAccount', 'rexistAccount');
+  
+  
+  
 
   socket.on('disconnect', function()
   {
@@ -153,6 +156,8 @@ webuser.on('connection', function(socket){
         reloadBounty();
         bounty.setDis(false);
       }
+      allEventNewAddBounty(socket, '', 'rallEventNewAddBounty');
+      allEventNewSend(socket, '', 'rallEventNewSend');
     }
   })
   account.Reconnect().then(function(info){
@@ -163,12 +168,12 @@ webuser.on('connection', function(socket){
         reloadAccount();
         account.setDis(false);
       }
+      allEventNewAccount(socket, '', 'rallEventNewAccount');
     }
   })
 
-  allEventNewAccount(socket, '', 'rallEventNewAccount');
-  allEventNewAddBounty(socket, '', 'rallEventNewAddBounty');
-  allEventNewSend(socket, '', 'rallEventNewSend');
+  
+  
 
   socket.on('disconnect', function()
   {
@@ -188,6 +193,11 @@ user.on('connection', function(socket){
         reloadBounty();
         bounty.setDis(false);
       }
+
+      sendBounty(socket, 'sendBounty', 'rsendBounty');
+      allEventNewAddBounty(socket, 'history', 'rhallEventNewAddBounty');
+      allEventNewSend(socket, 'history', 'rhallEventNewSend');
+      getAllBountySymbol(socket, 'getAllBountySymbol', 'rgetAllBountySymbol');
     }
   })
   account.Reconnect().then(function(info){
@@ -198,20 +208,14 @@ user.on('connection', function(socket){
         reloadAccount();
         account.setDis(false);
       }
+      login(socket, 'login', 'rlogin');
+      getInfoUser(socket, 'getInfoUser', 'rgetInfoUser');
     }
   })
 
   dataId[socket.id] = socket.id;
   dataUser[socket.id] = socket.id;
   dataLg[socket.id] = false;
-
-  login(socket, 'login', 'rlogin');
-  getInfoUser(socket, 'getInfoUser', 'rgetInfoUser');
-  getAllBountySymbol(socket, 'getAllBountySymbol', 'rgetAllBountySymbol');
-  sendBounty(socket, 'sendBounty', 'rsendBounty');
-
-  allEventNewAddBounty(socket, 'history', 'rhallEventNewAddBounty');
-  allEventNewSend(socket, 'history', 'rhallEventNewSend');
 
   socket.on('disconnect', function()
   {
